@@ -1,0 +1,448 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "weiguangyang/moonbit-gif"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn analyze_lzw(ArrayView[Byte], Int) -> LzwStats raise GifError
+
+pub fn animation_from_canvases(ArrayView[Canvas], delay_cs~ : Int, loop_count? : Int) -> Animation
+
+pub fn animation_from_patches(width~ : Int, height~ : Int, background~ : Rgba, ArrayView[PatchFrame], loop_count? : Int?) -> Animation
+
+pub fn apply_patches(width~ : Int, height~ : Int, background~ : Rgba, ArrayView[PixelPatch]) -> Canvas
+
+pub fn canvas_from_rgba_bytes(width~ : Int, height~ : Int, Bytes) -> Canvas raise GifError
+
+pub fn changed_bounds(Canvas, Canvas) -> (Int, Int, Int, Int)?
+
+pub fn changed_rect(Canvas, Canvas, Int) -> GifRect?
+
+pub fn checkerboard_canvas(width~ : Int, height~ : Int, cell_size? : Int, light? : Rgba, dark? : Rgba) -> Canvas
+
+pub fn compose(Animation) -> Array[Canvas]
+
+pub fn crossfade(Animation, Animation, Int, delay_cs? : Int) -> Animation
+
+pub fn decode(Bytes) -> Animation raise GifError
+
+pub fn encode(Animation) -> Bytes raise GifError
+
+pub fn encode_with_options(Animation, EncodeOptions) -> Bytes raise GifError
+
+pub fn estimate_frames(Animation, max_colors? : Int) -> Array[FrameEstimate] raise GifError
+
+pub fn estimate_size(Animation, max_colors? : Int) -> Int raise GifError
+
+pub fn frame_difference(Frame, Frame) -> Int
+
+pub fn inspect(Bytes) -> GifInfo raise GifError
+
+pub fn is_valid(Bytes) -> Bool
+
+pub fn lzw_decode(Bytes, Int, Int) -> Array[Byte] raise GifError
+
+pub fn lzw_decode_sub_blocks(Bytes, Int, Int) -> Array[Byte] raise GifError
+
+pub fn lzw_encode(ArrayView[Byte], Int) -> Bytes raise GifError
+
+pub fn lzw_encode_sub_blocks(ArrayView[Byte], Int) -> Bytes raise GifError
+
+pub fn mix_color(Rgba, Rgba, Int, Int) -> Rgba
+
+pub fn pack_sub_blocks(Bytes, block_size? : Int) -> Bytes
+
+pub fn pixel_difference(Canvas, Canvas) -> Int
+
+pub fn quantize(Canvas, max_colors? : Int, transparent? : Rgba) -> QuantizedFrame
+
+pub fn quantize_dithered(Canvas, Int, Rgba?, DitherMode) -> QuantizedFrame
+
+pub fn rgb(Byte, Byte, Byte) -> Rgba
+
+pub fn rgb_from_packed(Int) -> Rgba
+
+pub fn rgba(Byte, Byte, Byte, Byte) -> Rgba
+
+pub fn unpack_sub_blocks(Bytes) -> Bytes raise GifError
+
+// Errors
+pub(all) suberror GifError {
+  InvalidSignature
+  UnexpectedEnd(context~ : String)
+  InvalidDimensions
+  InvalidBlock(context~ : String)
+  UnsupportedFeature(feature~ : String)
+  InvalidLzw(context~ : String)
+  InvalidPalette(context~ : String)
+} derive(Eq, @debug.Debug)
+
+// Types and methods
+pub(all) struct Animation {
+  width : Int
+  height : Int
+  frames : Array[Frame]
+  loop_count : Int?
+  background : Rgba
+} derive(@debug.Debug)
+pub fn Animation::add_frame(Self, Frame) -> Self
+pub fn Animation::append(Self, Self) -> Self
+pub fn Animation::clip_offsets(Self) -> Self
+pub fn Animation::crop(Self, x~ : Int, y~ : Int, width~ : Int, height~ : Int) -> Self
+pub fn Animation::delay_all(Self, Int) -> Self
+pub fn Animation::delta_encode(Self, threshold? : Int) -> Self
+pub fn Animation::delta_stats(Self, threshold? : Int) -> DeltaStats
+pub fn Animation::duration_cs(Self) -> Int
+pub fn Animation::first_canvas(Self) -> Canvas?
+pub fn Animation::flatten_frames(Self) -> Self
+pub fn Animation::flip_horizontal(Self) -> Self
+pub fn Animation::flip_vertical(Self) -> Self
+pub fn Animation::frame_at(Self, Int) -> Frame?
+pub fn Animation::frame_count(Self) -> Int
+pub fn Animation::frames(Self) -> ArrayView[Frame]
+pub fn Animation::grayscale(Self) -> Self
+pub fn Animation::height(Self) -> Int
+pub fn Animation::hold(Self, Int) -> Self
+pub fn Animation::invert(Self) -> Self
+pub fn Animation::keyframe_indices(Self, threshold? : Int) -> Array[Int]
+pub fn Animation::keyframes(Self, threshold? : Int) -> Self
+pub fn Animation::last_canvas(Self) -> Canvas?
+pub fn Animation::loop_count(Self) -> Int?
+pub fn Animation::map_transform(Self, AnimationTransform) -> Self
+pub fn Animation::new(width~ : Int, height~ : Int) -> Self
+pub fn Animation::normalize_delays(Self, default_delay_cs? : Int) -> Self
+pub fn Animation::optimize_frames(Self) -> Self
+pub fn Animation::patch_density(Self, threshold? : Int) -> Int
+pub fn Animation::patch_frames(Self, threshold? : Int) -> Array[PatchFrame]
+pub fn Animation::persistent(Self) -> Self
+pub fn Animation::ping_pong(Self) -> Self
+pub fn Animation::position_at(Self, Int) -> TimelinePosition?
+pub fn Animation::repeat(Self, Int) -> Self
+pub fn Animation::resize_nearest(Self, width~ : Int, height~ : Int) -> Self
+pub fn Animation::retime(Self, Int) -> Self
+pub fn Animation::reverse(Self) -> Self
+pub fn Animation::sample(Self, Int) -> Self
+pub fn Animation::slice(Self, start~ : Int, end~ : Int) -> Self
+pub fn Animation::stats(Self) -> AnimationStats
+pub fn Animation::timeline_indices(Self) -> Array[Int]
+pub fn Animation::timeline_starts(Self) -> Array[Int]
+pub fn Animation::validate(Self) -> Array[String]
+pub fn Animation::width(Self) -> Int
+pub fn Animation::with_background(Self, background~ : Rgba) -> Self
+pub fn Animation::with_delay(Self, Int) -> Self
+pub fn Animation::with_frame(Self, index~ : Int, Frame) -> Self
+pub fn Animation::with_loop_count(Self, loop_count~ : Int?) -> Self
+
+pub(all) struct AnimationBuilder {
+  animation : Animation
+} derive(@debug.Debug)
+pub fn AnimationBuilder::background(Self, Rgba) -> Self
+pub fn AnimationBuilder::build(Self) -> Animation
+pub fn AnimationBuilder::frame(Self, Frame) -> Self
+pub fn AnimationBuilder::loop_count(Self, Int?) -> Self
+pub fn AnimationBuilder::new(width~ : Int, height~ : Int) -> Self
+pub fn AnimationBuilder::solid_frame(Self, color~ : Rgba, delay_cs~ : Int) -> Self
+
+pub(all) struct AnimationStats {
+  frame_count : Int
+  duration_cs : Int
+  transparent_frames : Int
+  changed_pixels : Int
+} derive(@debug.Debug)
+pub fn AnimationStats::changed_pixels(Self) -> Int
+pub fn AnimationStats::duration_cs(Self) -> Int
+pub fn AnimationStats::frame_count(Self) -> Int
+pub fn AnimationStats::transparent_frames(Self) -> Int
+
+pub(all) enum AnimationTransform {
+  Identity
+  Grayscale
+  Invert
+  FlipHorizontal
+  FlipVertical
+} derive(Eq, @debug.Debug)
+
+pub(all) struct Canvas {
+  width : Int
+  height : Int
+  pixels : Array[Rgba]
+} derive(@debug.Debug)
+pub fn Canvas::alpha_mask(Self, threshold? : Byte) -> Self
+pub fn Canvas::apply_patch(Self, PixelPatch) -> Int
+pub fn Canvas::average_color(Self) -> Rgba
+pub fn Canvas::blend_pixel(Self, x~ : Int, y~ : Int, color~ : Rgba) -> Bool
+pub fn Canvas::blit(Self, Self, destination_x~ : Int, destination_y~ : Int) -> Int
+pub fn Canvas::bounds(Self) -> GifRect
+pub fn Canvas::contain(Self, width~ : Int, height~ : Int, fill? : Rgba) -> Self
+pub fn Canvas::copy(Self) -> Self
+pub fn Canvas::corners(Self) -> Array[Rgba]
+pub fn Canvas::count_color(Self, Rgba) -> Int
+pub fn Canvas::cover(Self, width~ : Int, height~ : Int) -> Self
+pub fn Canvas::crop(Self, x~ : Int, y~ : Int, width~ : Int, height~ : Int) -> Self
+pub fn Canvas::diff_patch(Self, Self, threshold? : Int) -> PixelPatch?
+pub fn Canvas::dominant_color(Self) -> Rgba
+pub fn Canvas::draw_circle(Self, center_x~ : Int, center_y~ : Int, radius~ : Int, color~ : Rgba) -> Int
+pub fn Canvas::draw_line(Self, x0~ : Int, y0~ : Int, x1~ : Int, y1~ : Int, color~ : Rgba) -> Int
+pub fn Canvas::draw_rect(Self, x~ : Int, y~ : Int, width~ : Int, height~ : Int, color~ : Rgba) -> Int
+pub fn Canvas::fade_to(Self, Self, Int, Int) -> Self
+pub fn Canvas::fill(Self, Rgba) -> Unit
+pub fn Canvas::fill_circle(Self, center_x~ : Int, center_y~ : Int, radius~ : Int, color~ : Rgba) -> Int
+pub fn Canvas::fill_rect(Self, x~ : Int, y~ : Int, width~ : Int, height~ : Int, color~ : Rgba) -> Int
+pub fn Canvas::flatten_alpha(Self, fill~ : Rgba) -> Self
+pub fn Canvas::flip_horizontal(Self) -> Self
+pub fn Canvas::flip_vertical(Self) -> Self
+pub fn Canvas::get(Self, x~ : Int, y~ : Int) -> Rgba?
+pub fn Canvas::grayscale(Self) -> Self
+pub fn Canvas::hash(Self) -> UInt
+pub fn Canvas::height(Self) -> Int
+pub fn Canvas::invert(Self) -> Self
+pub fn Canvas::is_opaque(Self) -> Bool
+pub fn Canvas::len(Self) -> Int
+pub fn Canvas::map_colors(Self, ColorTransform) -> Self
+pub fn Canvas::new(width~ : Int, height~ : Int, fill~ : Rgba) -> Self
+pub fn Canvas::opaque_bounds(Self, alpha_threshold? : Byte) -> GifRect?
+pub fn Canvas::overlay(Self, Self, left~ : Int, top~ : Int) -> Self
+pub fn Canvas::pad(Self, left~ : Int, top~ : Int, right~ : Int, bottom~ : Int, fill? : Rgba) -> Self
+pub fn Canvas::pixels(Self) -> ArrayView[Rgba]
+pub fn Canvas::preview(Self, cell_size? : Int) -> Self
+pub fn Canvas::replace_color(Self, from~ : Rgba, to~ : Rgba) -> Int
+pub fn Canvas::resize_nearest(Self, width~ : Int, height~ : Int) -> Self
+pub fn Canvas::rotate(Self, CanvasRotation) -> Self
+pub fn Canvas::rotate180(Self) -> Self
+pub fn Canvas::rotate270(Self) -> Self
+pub fn Canvas::rotate90(Self) -> Self
+pub fn Canvas::sample(Self, x~ : Int, y~ : Int) -> Rgba
+pub fn Canvas::sampled(Self, width~ : Int, height~ : Int, mode? : SamplingMode) -> Self
+pub fn Canvas::scale_alpha(Self, Byte) -> Self
+pub fn Canvas::set(Self, x~ : Int, y~ : Int, color~ : Rgba) -> Bool
+pub fn Canvas::silhouette(Self, color? : Rgba, threshold? : Byte) -> Self
+pub fn Canvas::stats(Self) -> CanvasStats
+pub fn Canvas::thumbnail(Self, Int, mode? : SamplingMode) -> Self
+pub fn Canvas::tint(Self, tint~ : Rgba, strength~ : Int) -> Self
+pub fn Canvas::to_rgba_bytes(Self) -> Bytes
+pub fn Canvas::trim_transparent(Self, alpha_threshold? : Byte) -> Self
+pub fn Canvas::width(Self) -> Int
+pub fn Canvas::write_patch(Self, PixelPatch) -> Int
+
+pub(all) enum CanvasRotation {
+  Clockwise90
+  HalfTurn
+  Clockwise270
+} derive(Eq, @debug.Debug)
+
+pub(all) struct CanvasStats {
+  pixel_count : Int
+  opaque_count : Int
+  transparent_count : Int
+  minimum_luma : Byte
+  maximum_luma : Byte
+  average_luma : Int
+} derive(@debug.Debug)
+pub fn CanvasStats::average_luma(Self) -> Int
+pub fn CanvasStats::maximum_luma(Self) -> Byte
+pub fn CanvasStats::minimum_luma(Self) -> Byte
+pub fn CanvasStats::opaque_count(Self) -> Int
+pub fn CanvasStats::pixel_count(Self) -> Int
+pub fn CanvasStats::transparent_count(Self) -> Int
+
+type ColorBox derive(@debug.Debug)
+
+pub(all) enum ColorTransform {
+  Identity
+  Grayscale
+  Invert
+  Opaque
+  Transparent
+} derive(Eq, @debug.Debug)
+
+pub(all) struct DeltaStats {
+  frame_count : Int
+  full_pixels : Int
+  delta_pixels : Int
+  changed_frames : Int
+} derive(@debug.Debug)
+pub fn DeltaStats::changed_frames(Self) -> Int
+pub fn DeltaStats::delta_pixels(Self) -> Int
+pub fn DeltaStats::frame_count(Self) -> Int
+pub fn DeltaStats::full_pixels(Self) -> Int
+pub fn DeltaStats::saving_per_mille(Self) -> Int
+
+pub(all) enum Disposal {
+  Keep
+  Background
+  Previous
+} derive(Eq, @debug.Debug)
+
+pub(all) enum DitherMode {
+  NoDither
+  Ordered2x2
+  FloydSteinberg
+} derive(Eq, @debug.Debug)
+
+pub(all) struct EncodeOptions {
+  max_colors : Int
+  default_delay_cs : Int
+  emit_loop_extension : Bool
+} derive(@debug.Debug)
+pub fn EncodeOptions::colors(Self) -> Int
+pub fn EncodeOptions::default() -> Self
+pub fn EncodeOptions::default_delay(Self) -> Int
+pub fn EncodeOptions::loop_extension(Self) -> Bool
+pub fn EncodeOptions::new(max_colors~ : Int, default_delay_cs~ : Int) -> Self
+pub fn EncodeOptions::with_loop_extension(Self, Bool) -> Self
+
+pub(all) struct Frame {
+  canvas : Canvas
+  delay_cs : Int
+  disposal : Disposal
+  transparent : Rgba?
+  left : Int
+  top : Int
+} derive(@debug.Debug)
+pub fn Frame::canvas(Self) -> Canvas
+pub fn Frame::clamp_delay(Self) -> Self
+pub fn Frame::delay_cs(Self) -> Int
+pub fn Frame::disposal(Self) -> Disposal
+pub fn Frame::new(canvas~ : Canvas, delay_cs~ : Int) -> Self
+pub fn Frame::offset(Self) -> (Int, Int)
+pub fn Frame::visible_delay_cs(Self) -> Int
+pub fn Frame::with_delay(Self, delay_cs~ : Int) -> Self
+pub fn Frame::with_disposal(Self, disposal~ : Disposal) -> Self
+pub fn Frame::with_offset(Self, left~ : Int, top~ : Int) -> Self
+pub fn Frame::with_transparent(Self, color~ : Rgba) -> Self
+
+pub(all) struct FrameEstimate {
+  width : Int
+  height : Int
+  palette_bytes : Int
+  lzw_bytes : Int
+  total_bytes : Int
+} derive(@debug.Debug)
+pub fn FrameEstimate::height(Self) -> Int
+pub fn FrameEstimate::lzw_bytes(Self) -> Int
+pub fn FrameEstimate::palette_bytes(Self) -> Int
+pub fn FrameEstimate::total_bytes(Self) -> Int
+pub fn FrameEstimate::width(Self) -> Int
+
+pub(all) struct GifInfo {
+  version : String
+  width : Int
+  height : Int
+  frame_count : Int
+  has_global_palette : Bool
+  uses_local_palettes : Bool
+  uses_transparency : Bool
+  loop_count : Int?
+  compressed_bytes : Int
+} derive(@debug.Debug)
+pub fn GifInfo::compressed_bytes(Self) -> Int
+pub fn GifInfo::frame_count(Self) -> Int
+pub fn GifInfo::has_global_palette(Self) -> Bool
+pub fn GifInfo::height(Self) -> Int
+pub fn GifInfo::loop_count(Self) -> Int?
+pub fn GifInfo::uses_local_palettes(Self) -> Bool
+pub fn GifInfo::uses_transparency(Self) -> Bool
+pub fn GifInfo::version(Self) -> String
+pub fn GifInfo::width(Self) -> Int
+
+pub(all) struct GifRect {
+  left : Int
+  top : Int
+  width : Int
+  height : Int
+} derive(Eq, @debug.Debug)
+pub fn GifRect::area(Self) -> Int
+pub fn GifRect::bottom(Self) -> Int
+pub fn GifRect::height(Self) -> Int
+pub fn GifRect::left(Self) -> Int
+pub fn GifRect::new(left~ : Int, top~ : Int, width~ : Int, height~ : Int) -> Self
+pub fn GifRect::right(Self) -> Int
+pub fn GifRect::top(Self) -> Int
+pub fn GifRect::width(Self) -> Int
+
+pub(all) struct LzwStats {
+  input_bytes : Int
+  compressed_bytes : Int
+  minimum_code_size : Int
+} derive(@debug.Debug)
+pub fn LzwStats::compressed_bytes(Self) -> Int
+pub fn LzwStats::input_bytes(Self) -> Int
+pub fn LzwStats::minimum_code_size(Self) -> Int
+pub fn LzwStats::saving_per_mille(Self) -> Int
+
+pub(all) struct Palette {
+  colors : Array[Rgba]
+  transparent_index : Int?
+} derive(@debug.Debug)
+pub fn Palette::color(Self, Int) -> Rgba?
+pub fn Palette::colors(Self) -> ArrayView[Rgba]
+pub fn Palette::contains(Self, Rgba) -> Bool
+pub fn Palette::len(Self) -> Int
+pub fn Palette::nearest(Self, Rgba) -> Int
+pub fn Palette::new(colors~ : Array[Rgba], transparent_index~ : Int?) -> Self
+pub fn Palette::to_rgb_bytes(Self, table_size~ : Int) -> Bytes
+pub fn Palette::transparent_index(Self) -> Int?
+
+type PaletteSample derive(@debug.Debug)
+
+pub(all) struct PatchFrame {
+  patch : PixelPatch
+  delay_cs : Int
+} derive(@debug.Debug)
+pub fn PatchFrame::delay_cs(Self) -> Int
+pub fn PatchFrame::patch(Self) -> PixelPatch
+
+pub(all) struct PixelPatch {
+  rect : GifRect
+  pixels : Array[Rgba]
+} derive(@debug.Debug)
+pub fn PixelPatch::area(Self) -> Int
+pub fn PixelPatch::as_frame(Self, delay_cs~ : Int) -> Frame
+pub fn PixelPatch::is_empty(Self) -> Bool
+pub fn PixelPatch::pixel_count(Self) -> Int
+pub fn PixelPatch::pixels(Self) -> ArrayView[Rgba]
+pub fn PixelPatch::rect(Self) -> GifRect
+
+pub(all) struct QuantizedFrame {
+  palette : Palette
+  indices : Array[Byte]
+} derive(@debug.Debug)
+pub fn QuantizedFrame::indices(Self) -> ArrayView[Byte]
+pub fn QuantizedFrame::palette(Self) -> Palette
+
+pub(all) struct Rgba {
+  r : Byte
+  g : Byte
+  b : Byte
+  a : Byte
+} derive(Eq, @debug.Debug)
+pub fn Rgba::alpha(Self) -> Byte
+pub fn Rgba::blue(Self) -> Byte
+pub fn Rgba::distance(Self, Self) -> Int
+pub fn Rgba::grayscale(Self) -> Self
+pub fn Rgba::green(Self) -> Byte
+pub fn Rgba::invert(Self) -> Self
+pub fn Rgba::luma(Self) -> Byte
+pub fn Rgba::packed_rgb(Self) -> Int
+pub fn Rgba::red(Self) -> Byte
+pub fn Rgba::with_alpha(Self, Byte) -> Self
+
+pub(all) enum SamplingMode {
+  Nearest
+  BoxAverage
+} derive(Eq, @debug.Debug)
+
+pub(all) struct TimelinePosition {
+  index : Int
+  elapsed_cs : Int
+  remaining_cs : Int
+} derive(Eq, @debug.Debug)
+pub fn TimelinePosition::elapsed_cs(Self) -> Int
+pub fn TimelinePosition::index(Self) -> Int
+pub fn TimelinePosition::remaining_cs(Self) -> Int
+
+// Type aliases
+
+// Traits
