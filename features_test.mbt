@@ -69,3 +69,33 @@ test "sampling and packed colors" {
   let packed = rgb(1, 2, 3).packed_rgb()
   assert_eq(rgb_from_packed(packed), rgb(1, 2, 3))
 }
+
+///|
+test "sub-block framing and compression metrics" {
+  let payload = b"abcdef"
+  let framed = pack_sub_blocks(payload, block_size=2)
+  assert_eq(unpack_sub_blocks(framed), payload)
+  let indices : Array[Byte] = [0, 0, 1, 1, 0, 0, 1, 1]
+  let lzw_framed = lzw_encode_sub_blocks(indices[:], 2)
+  assert_eq(lzw_decode_sub_blocks(lzw_framed, 2, indices.length()), indices)
+  let metrics = analyze_lzw(indices[:], 2)
+  assert_eq(metrics.input_bytes(), indices.length())
+  assert_true(metrics.compressed_bytes() > 0)
+}
+
+///|
+test "inspection reports encoded animation structure" {
+  let canvas = Canvas::new(width=3, height=2, fill=rgb(12, 34, 56))
+  let animation = Animation::new(width=3, height=2).add_frame(
+    Frame::new(canvas~, delay_cs=4),
+  )
+  let encoded = encode(animation)
+  let info = inspect(encoded)
+  assert_eq(info.version(), "GIF89a")
+  assert_eq(info.width(), 3)
+  assert_eq(info.height(), 2)
+  assert_eq(info.frame_count(), 1)
+  assert_true(info.has_global_palette())
+  assert_true(info.compressed_bytes() > 0)
+  assert_true(is_valid(encoded))
+}

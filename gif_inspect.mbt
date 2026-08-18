@@ -188,9 +188,12 @@ pub fn inspect(data : Bytes) -> GifInfo raise GifError {
 ///|
 /// Return false instead of raising for callers that only need a quick probe.
 pub fn is_valid(data : Bytes) -> Bool {
-  try inspect(data) catch {
+  try {
+    ignore(inspect(data))
+    true
+  } catch {
     _ => false
   } noraise {
-    _ => false
+    _ => true
   }
 }
