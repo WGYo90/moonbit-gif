@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "weiguangyang/moonbit-gif"
+package "WGYo90/moonbit-gif"
 
 import {
   "moonbitlang/core/debug",

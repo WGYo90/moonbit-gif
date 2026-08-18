@@ -1,10 +1,10 @@
-name = "weiguangyang/moonbit-gif"
+name = "WGYo90/moonbit-gif"
 
 version = "0.1.0"
 
 readme = "README.md"
 
-repository = ""
+repository = "https://github.com/WGYo90/moonbit-gif"
 
 license = "Apache-2.0"
 

@@ -20,15 +20,15 @@ MoonBit 生态已经有覆盖多种静态图像格式的图像库。本项目把
 
 ## 快速开始
 
-当前模块名使用了作者目录名 `weiguangyang` 作为本地占位。提交到 GitHub 前，请把 `moon.mod` 中的模块名和仓库地址替换为实际 GitHub 用户名/仓库。
+模块命名空间和仓库地址均对应本项目 GitHub 账号 `WGYo90`。
 
 ```bash
-moon add weiguangyang/moonbit-gif@0.1.0
+moon add WGYo90/moonbit-gif@0.1.0
 ```
 
 ```moonbit
 import {
-  "weiguangyang/moonbit-gif" @gif,
+  "WGYo90/moonbit-gif" @gif,
 }
 
 let canvas = @gif.Canvas::new(
@@ -83,4 +83,3 @@ CI 在 Ubuntu、macOS 和 Windows 上安装 MoonBit 后执行同一组检查。`
 本仓库为原创 MoonBit 实现，没有复制第三方源码、图片或闭源实现。GIF 的公开格式语义和 LZW 算法按公开标准自行实现；生态对比仅用于明确边界，不构成本项目依赖。项目使用 Apache-2.0，详见 [`LICENSE`](LICENSE)。
 
 AI 工具曾用于局部脚手架建议和调试辅助；接口设计、实现取舍、测试、格式检查和许可证边界由项目作者复核并负责。本仓库未引入未经授权的生成内容。
-
