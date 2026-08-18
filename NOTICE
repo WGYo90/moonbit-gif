@@ -1,0 +1,9 @@
+moonbit-gif
+Copyright 2026 WGYo90
+
+This repository contains the original MoonBit implementation and in-memory
+test data for the moonbit-gif project. No third-party source code, image
+fixtures, or proprietary materials are redistributed here.
+
+See LICENSE for the Apache-2.0 terms and docs/SOURCE_NOTES.md for the source
+and provenance record.
