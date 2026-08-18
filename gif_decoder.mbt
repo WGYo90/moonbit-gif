@@ -126,11 +126,7 @@ fn parse_image(
     .to_int()
   let compressed = read_sub_blocks(cursor, context="image data sub-blocks")
   let indices = lzw_decode(compressed, min_code_size, width * height)
-  let canvas = Canvas::new(
-    width=screen.width,
-    height=screen.height,
-    fill=screen.background,
-  )
+  let canvas = Canvas::new(width~, height~, fill=rgba(0, 0, 0, 0))
   let transparent_color = match gce.transparent_index {
     None => None
     Some(index) =>
@@ -144,8 +140,8 @@ fn parse_image(
   for y in 0..<height {
     for x in 0..<width {
       let index = indices[x + y * width].to_int()
-      let target_x = left + x
-      let target_y = top + y
+      let target_x = x
+      let target_y = y
       if gce.transparent_index is Some(t) && index == t {
         ignore(
           canvas.set(
@@ -167,7 +163,7 @@ fn parse_image(
   }
   let frame = Frame::new(canvas~, delay_cs=gce.delay_cs)
     .with_disposal(disposal=gce.disposal)
-    .with_offset(left=0, top=0)
+    .with_offset(left~, top~)
   match transparent_color {
     None => frame
     Some(color) => frame.with_transparent(color~)
