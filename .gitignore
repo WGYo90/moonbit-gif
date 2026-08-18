@@ -1,0 +1,7 @@
+_build/
+.mooncakes/
+.repos/
+*.swp
+*.swo
+.DS_Store
+

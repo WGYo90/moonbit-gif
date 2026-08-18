@@ -1,0 +1,5 @@
+import {
+  "weiguangyang/moonbit-gif" @gif,
+}
+
+pkgtype(kind: "executable")
