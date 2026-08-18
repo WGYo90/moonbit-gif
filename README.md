@@ -59,6 +59,8 @@ moon test --target all --deny-warn
 moon build --target all --deny-warn
 ```
 
+Windows 开发者也可以直接运行 `pwsh ./scripts/check.ps1` 执行同一套检查、测试、构建和 CLI 示例。
+
 CI 在 Ubuntu、macOS 和 Windows 上安装 MoonBit 后执行同一组检查。`moon fmt` 与 `moon info` 本身没有 `--deny-warn` 选项，因此格式严格性由 `moon fmt --check`/`moon check --fmt --deny-warn` 保证，信息文件通过 `git diff --exit-code` 保证没有未生成变更。
 
 ## 目录结构
