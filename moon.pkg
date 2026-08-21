@@ -1,1 +1,4 @@
-// The root package is the public GIF engine.
+// The root package extends mizchi/image's RGBA ImageData with animation APIs.
+import {
+  "mizchi/image",
+}

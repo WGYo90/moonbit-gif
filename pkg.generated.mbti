@@ -2,6 +2,7 @@
 package "WGYo90/moonbit-gif"
 
 import {
+  "mizchi/image",
   "moonbitlang/core/debug",
 }
 
@@ -10,9 +11,13 @@ pub fn analyze_lzw(ArrayView[Byte], Int) -> LzwStats raise GifError
 
 pub fn animation_from_canvases(ArrayView[Canvas], delay_cs~ : Int, loop_count? : Int) -> Animation
 
+pub fn animation_from_image_data(ArrayView[@image.ImageData], delay_cs? : Int, loop_count? : Int) -> Animation raise GifError
+
 pub fn animation_from_patches(width~ : Int, height~ : Int, background~ : Rgba, ArrayView[PatchFrame], loop_count? : Int?) -> Animation
 
 pub fn apply_patches(width~ : Int, height~ : Int, background~ : Rgba, ArrayView[PixelPatch]) -> Canvas
+
+pub fn canvas_from_image_data(@image.ImageData) -> Canvas raise GifError
 
 pub fn canvas_from_rgba_bytes(width~ : Int, height~ : Int, Bytes) -> Canvas raise GifError
 
@@ -28,7 +33,13 @@ pub fn crossfade(Animation, Animation, Int, delay_cs? : Int) -> Animation
 
 pub fn decode(Bytes) -> Animation raise GifError
 
+pub fn decode_first_image_data(Bytes) -> @image.ImageData raise GifError
+
 pub fn encode(Animation) -> Bytes raise GifError
+
+pub fn encode_image_data(@image.ImageData, delay_cs? : Int) -> Bytes raise GifError
+
+pub fn encode_image_sequence(ArrayView[@image.ImageData], delay_cs? : Int, loop_count? : Int) -> Bytes raise GifError
 
 pub fn encode_with_options(Animation, EncodeOptions) -> Bytes raise GifError
 
@@ -37,6 +48,8 @@ pub fn estimate_frames(Animation, max_colors? : Int) -> Array[FrameEstimate] rai
 pub fn estimate_size(Animation, max_colors? : Int) -> Int raise GifError
 
 pub fn frame_difference(Frame, Frame) -> Int
+
+pub fn frame_from_image_data(@image.ImageData, delay_cs? : Int) -> Frame raise GifError
 
 pub fn inspect(Bytes) -> GifInfo raise GifError
 
@@ -221,6 +234,7 @@ pub fn Canvas::silhouette(Self, color? : Rgba, threshold? : Byte) -> Self
 pub fn Canvas::stats(Self) -> CanvasStats
 pub fn Canvas::thumbnail(Self, Int, mode? : SamplingMode) -> Self
 pub fn Canvas::tint(Self, tint~ : Rgba, strength~ : Int) -> Self
+pub fn Canvas::to_image_data(Self) -> @image.ImageData
 pub fn Canvas::to_rgba_bytes(Self) -> Bytes
 pub fn Canvas::trim_transparent(Self, alpha_threshold? : Byte) -> Self
 pub fn Canvas::width(Self) -> Int
