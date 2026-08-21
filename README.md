@@ -1,12 +1,16 @@
 # moonbit-gif
 
-MoonBit 原生实现的 GIF89a 动态图像合成与 LZW 编码引擎。
+基于 `mizchi/image` 的 MoonBit GIF89a 动态图像合成与 LZW 扩展层。
 
-项目面向“把一组 RGBA 帧稳定地变成可播放 GIF”这一具体工作流，提供帧时间线、透明色、局部/全局调色板、Median Cut 量化、位级 LZW、差分帧分析和 GIF 解析。它不是通用图片格式大而全的替代品。
+项目面向“把一组 `mizchi/image.ImageData` 稳定地变成可播放 GIF”这一具体工作流，在上游 RGBA 图像表示之上增加帧时间线、透明色、局部/全局调色板、Median Cut 量化、位级 LZW、差分帧分析和 GIF 解析。本项目不复制上游源码，也不试图替代通用静态图像库。
 
 ## 为什么做这个项目
 
-MoonBit 生态已经有覆盖多种静态图像格式的图像库。本项目把边界放在动态 GIF 生产链上：动态帧合成、disposal 语义、帧间延迟、调色板量化和 GIF 子块/LZW 的完整闭环。这样既能复用 RGBA 画布，也能服务录屏转 GIF、网页表情包合成、像素画动画导出等上层工具。
+`mizchi/image` 已经提供 `ImageData`、PNG/BMP/JPEG 编解码、缩放和单帧 GIF 编码。本项目明确沿着它的 RGBA 数据边界扩展动态 GIF 生产链：帧合成、disposal 语义、帧间延迟、调色板量化和 GIF 子块/LZW 的完整闭环。这样上游负责“得到图像”，本项目负责“组织并播放图像序列”，可服务录屏转 GIF、网页表情包合成和像素画动画导出等工具。
+
+## 上游依赖与扩展边界
+
+仓库通过 Mooncakes 依赖 `mizchi/image@0.4.3`，上游源码和 Apache-2.0 许可见 [`mizchi/image-mbt`](https://github.com/mizchi/image-mbt)，包文档见 [`mizchi/image`](https://mooncakes.io/docs/mizchi/image)。本项目新增 `image_bridge.mbt`，提供 `ImageData` 与 `Canvas`、`Frame`、`Animation` 之间的转换，以及多帧编码和首帧解码 API；动态 GIF 的时间线、局部帧矩形、disposal、量化和 LZW 仍由本仓库实现。
 
 ## 已实现
 
@@ -23,25 +27,25 @@ MoonBit 生态已经有覆盖多种静态图像格式的图像库。本项目把
 模块命名空间和仓库地址均对应本项目 GitHub 账号 `WGYo90`。
 
 ```bash
+moon add mizchi/image@0.4.3
 moon add WGYo90/moonbit-gif@0.1.0
 ```
 
 ```moonbit
 import {
+  "mizchi/image" @image,
   "WGYo90/moonbit-gif" @gif,
 }
 
-let canvas = @gif.Canvas::new(
-  width=32,
-  height=32,
-  fill=@gif.rgba(0, 0, 0, 0),
-)
-ignore(canvas.fill_rect(x=4, y=4, width=24, height=24, color=@gif.rgb(40, 180, 255)))
-
-let animation = @gif.Animation::new(width=32, height=32)
-  .add_frame(@gif.Frame::new(canvas=canvas, delay_cs=8))
-let bytes = @gif.encode(animation)
+let frame = @image.ImageData::{
+  width: 32,
+  height: 32,
+  data: Bytes::make(32 * 32 * 4, 255),
+}
+let bytes = @gif.encode_image_sequence([frame], delay_cs=8, loop_count=0)
 ```
+
+需要精细绘制时，也可以继续使用 `@gif.Canvas` 构造 `Frame` 和 `Animation`；`Canvas::to_image_data` 可将结果交回 `mizchi/image` 的 RGBA 表示。
 
 运行仓库示例：
 
@@ -73,6 +77,7 @@ CI 在 Ubuntu、macOS 和 Windows 上安装 MoonBit 后执行同一组检查。`
 | `gif_encoder.mbt` / `gif_decoder.mbt` | GIF89a 编解码 |
 | `compose.mbt` / `gif_delta.mbt` / `gif_patch.mbt` | disposal 合成和帧差分 |
 | `canvas_*.mbt` / `animation_*.mbt` | 画布工具和动画时间线工具 |
+| `image_bridge.mbt` | `mizchi/image.ImageData` 适配与多帧 API |
 | `cmd/main` | 可运行示例 |
 | `docs/PROJECT_PROPOSAL.md` | 黑客松项目说明初稿 |
 
@@ -82,6 +87,4 @@ CI 在 Ubuntu、macOS 和 Windows 上安装 MoonBit 后执行同一组检查。`
 
 ## 来源与许可证
 
-本仓库为原创 MoonBit 实现，没有复制第三方源码、图片或闭源实现。GIF 的公开格式语义和 LZW 算法按公开标准自行实现；生态对比仅用于明确边界，不构成本项目依赖。项目使用 Apache-2.0，详见 [`LICENSE`](LICENSE) 和 [`SOURCE_NOTES.md`](docs/SOURCE_NOTES.md)。
-
-AI 工具曾用于局部脚手架建议和调试辅助；接口设计、实现取舍、测试、格式检查和许可证边界由项目作者复核并负责。本仓库未引入未经授权的生成内容。
+本仓库的动态 GIF、画布、量化、LZW、合成和适配代码为本项目原创 MoonBit 实现；GIF 的公开格式语义和 LZW 算法按公开规范自行实现。`mizchi/image@0.4.3` 作为 Apache-2.0 上游依赖使用，不复制其源码；项目整体使用 Apache-2.0，详见 [`LICENSE`](LICENSE)、[`NOTICE`](NOTICE) 和 [`SOURCE_NOTES.md`](docs/SOURCE_NOTES.md)。

@@ -1,9 +1,10 @@
 moonbit-gif
 Copyright 2026 WGYo90
 
-This repository contains the original MoonBit implementation and in-memory
-test data for the moonbit-gif project. No third-party source code, image
-fixtures, or proprietary materials are redistributed here.
+This repository contains the original MoonBit animation, GIF, and adapter
+implementation and in-memory test data for the moonbit-gif project. It uses
+the Mooncakes dependency mizchi/image@0.4.3 as an external Apache-2.0
+dependency; its source is not copied or redistributed in this repository.
 
 See LICENSE for the Apache-2.0 terms and docs/SOURCE_NOTES.md for the source
 and provenance record.

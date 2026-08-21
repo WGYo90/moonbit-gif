@@ -3,28 +3,28 @@
 - 项目名称：MoonBit 动态 GIF 图像合成与 LZW 压缩编码引擎
 - 项目标识：moonbit-gif
 - 项目仓库：[WGYo90/moonbit-gif](https://github.com/WGYo90/moonbit-gif)
-- 项目方向：原创 MoonBit 库，面向动态图像处理与开发工具链
-- 项目性质：原创实现，不是移植，不复制第三方源码、图片或闭源内容
-## 二、项目简介
-`moonbit-gif` 是纯 MoonBit 实现的 GIF87a/GIF89a 动态图像解析、合成与编码引擎。
-项目以 RGBA 画布和动画时间线为中间表示，完成多帧、透明度、帧延迟、disposal、调色板量化和 LZW 压缩的闭环。
-## 三、应用价值
-项目面向 Screen Recording 转 GIF、网页表情包合成、像素画动画导出和轻量化图像服务等实际场景。
-它可作为上层 CLI、WASM 网页工具和 MoonBit 图像应用的稳定基础库，降低动态 GIF 工具的接入成本。
-相较生态中已有的通用静态图像库，本项目聚焦动态 GIF 的帧时间线、局部图像矩形、disposal 和 LZW 细节。
-## 四、核心功能
+- 项目定位：基于 `mizchi/image` 的动态 GIF 扩展层
+## 二、项目与生态关系
+`mizchi/image@0.4.3` 已提供 RGBA `ImageData`、PNG/BMP/JPEG 编解码、缩放和单帧 GIF 编码；上游源码为 [mizchi/image-mbt](https://github.com/mizchi/image-mbt)，采用 Apache-2.0。
+本项目通过 Mooncakes 依赖直接复用上游数据表示，在其边界上新增 `ImageData` 与动画引擎的适配 API，不复制上游源码，形成清晰的扩展关系。
+## 三、项目简介
+`moonbit-gif` 面向“把一组图像稳定地变成可播放 GIF”的工作流，补足多帧时间线、局部帧矩形、透明度、disposal、调色板量化和 LZW 编解码。
+## 四、核心功能与应用价值
 - 支持 GIF87a/GIF89a 读取，解析逻辑屏幕、全局/局部调色板、图形控制扩展、循环扩展和多帧图像。
-- 支持 GIF89a 编码，自动处理全局/局部调色板、透明色、帧延迟、disposal 和循环次数。
-- 实现 Median Cut 调色板量化、有序抖动与 Floyd–Steinberg 抖动，控制索引色质量和文件体积。
-- 实现位级动态码宽 LZW 编解码、12 位码表、清除码、结束码、KwKwK 情形和 GIF data sub-block。
-- 提供画布绘制、缩放、旋转、透明边界裁剪、差分帧、关键帧分析、补丁重建和动画时间线工具。
-## 五、技术路线
-以 RGBA Canvas 统一承载帧数据；编码时先量化为索引色，再写入 GIF 逻辑屏幕、控制扩展和 LZW 子块。
-解码时恢复局部帧矩形与偏移，由合成器依据透明语义和 disposal 规则重建播放画面。
-## 六、实施范围与计划
-第一阶段完成编解码、LZW、量化、透明度、多帧合成和核心边界测试；第二阶段完成差分优化、采样工具、CLI 示例与跨平台 CI。
-第三阶段围绕录屏适配器、WASM 网页端和 Mooncakes 发布完善接口、性能测试、文档和版本维护。
-## 七、交付物与验收
-交付公开 GitHub 仓库、Apache-2.0 LICENSE、README、可运行示例、项目文档、14 项跨目标测试、严格 fmt/check/info/build 流程和 CI。
-## 八、开源说明与后续
-项目使用 Apache-2.0，当前实现和测试素材均为原创或自行构造；后续将扩展隔行扫描、流式输入和录屏/网页适配器。
+- 支持 GIF89a 编码，提供全局/局部调色板、Median Cut、有序/Floyd–Steinberg 抖动、透明色、帧延迟和循环次数。
+- 实现位级动态码宽 LZW、12 位码表、清除码、结束码、KwKwK 情形与 GIF data sub-block。
+- 提供画布合成、差分帧、关键帧分析和 `ImageData` 多帧桥接，可支撑录屏转 GIF、网页表情包和像素动画导出。
+## 五、实施范围与技术路线
+以 `mizchi/image.ImageData` 作为输入输出边界，以 RGBA `Canvas` 和 `Animation` 作为中间表示；编码时量化为索引色并写入 GIF 块，解码时恢复帧矩形并依据 disposal 合成。
+比赛阶段交付稳定的桥接 API、动态编解码、核心边界测试、CLI 示例、README、来源说明和跨平台 CI；后续可扩展录屏、WASM、流式输入和网页导出。
+## 六、实施计划
+- 第一阶段维护 `ImageData` 桥接、动态编解码、LZW、调色板和 disposal 合成，补齐核心边界测试。
+- 第二阶段完善 CLI 示例、差分帧分析、跨平台 CI、严格格式检查和 Mooncakes 发布材料。
+- 第三阶段扩展录屏输入、WASM/网页端导出、流式编码和性能基准，保持上游接口边界稳定。
+## 七、验收与开源说明
+公开仓库应能通过 `moon fmt --check`、`moon check --target all --deny-warn --fmt`、`moon info --target all`、跨目标测试和构建；有效实现规模以仓库实际统计为准，不虚报。
+动态 GIF、合成、量化、LZW 和桥接代码为本项目原创 MoonBit 实现；上游依赖及其许可证在 `NOTICE`、`docs/SOURCE_NOTES.md` 和 `moon.mod` 中完整记录，项目整体采用 Apache-2.0。
+## 八、可扩展性与边界
+本项目专注动态图像序列，不重复建设上游静态图像编解码；采集、界面和文件系统能力由未来 CLI、WASM 或网页适配器提供。
+## 九、版本交付
+比赛提交包含公开源码、示例、测试、CI、README、架构文档、来源说明、许可证与可复现的检查命令。
