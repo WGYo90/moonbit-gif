@@ -27,6 +27,9 @@ jobs:
       - name: Show toolchain
         run: moon version --all
 
+      - name: Sync dependencies
+        run: moon update
+
       - name: Run native coverage
         run: |
           moon test --target native --deny-warn --enable-coverage
